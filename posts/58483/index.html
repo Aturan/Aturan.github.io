@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>为什么要使用状态管理 - Kayano&#039;s Blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Kayano&#039;s Blog"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kayano&#039;s Blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="我们平时开发的大部分项目，由于复杂度不够， 很少使用 Vuex、Redux 等状态管理库，就算引入了 Vuex 这些库，也只是当作一个全局数据引用，并非对应用状态进行管理。 但一旦页面的复杂度比较高，必然要引入状态管理，今天就聊聊我理解中的状态管理。 如果涉及到举例，由于我对Vuex更熟悉，团队内也大多比较熟悉Vue，因此会使用Vuex作例子。 到底什么时候应该使用状态管理举例几个需要用 Vuex"><meta property="og:type" content="article"><meta property="og:title" content="为什么要使用状态管理"><meta property="og:url" content="http://www.aturan.me/posts/58483/"><meta property="og:site_name" content="Kayano&#039;s Blog"><meta property="og:description" content="我们平时开发的大部分项目，由于复杂度不够， 很少使用 Vuex、Redux 等状态管理库，就算引入了 Vuex 这些库，也只是当作一个全局数据引用，并非对应用状态进行管理。 但一旦页面的复杂度比较高，必然要引入状态管理，今天就聊聊我理解中的状态管理。 如果涉及到举例，由于我对Vuex更熟悉，团队内也大多比较熟悉Vue，因此会使用Vuex作例子。 到底什么时候应该使用状态管理举例几个需要用 Vuex"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://pbwci.qun.hk/Ful1WXS4BGpw1TQr2zMTadHm8Q0i?imageView2/2/w/500"><meta property="og:image" content="https://pbwci.qun.hk/FibadD1uNeuHRnH9OGjFPiSRs_OS?imageView2/2/w/500"><meta property="article:published_time" content="2019-07-11T15:46:59.000Z"><meta property="article:modified_time" content="2023-11-14T13:43:37.415Z"><meta property="article:author" content="Kayano"><meta property="article:tag" content="Vue.js"><meta property="article:tag" content="设计思想"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://pbwci.qun.hk/Ful1WXS4BGpw1TQr2zMTadHm8Q0i?imageView2/2/w/500"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.aturan.me/posts/58483/"},"headline":"为什么要使用状态管理","image":[],"datePublished":"2019-07-11T15:46:59.000Z","dateModified":"2023-11-14T13:43:37.415Z","author":{"@type":"Person","name":"Kayano"},"publisher":{"@type":"Organization","name":"Kayano's Blog","logo":{"@type":"ImageObject"}},"description":"我们平时开发的大部分项目，由于复杂度不够， 很少使用 Vuex、Redux 等状态管理库，就算引入了 Vuex 这些库，也只是当作一个全局数据引用，并非对应用状态进行管理。 但一旦页面的复杂度比较高，必然要引入状态管理，今天就聊聊我理解中的状态管理。 如果涉及到举例，由于我对Vuex更熟悉，团队内也大多比较熟悉Vue，因此会使用Vuex作例子。 到底什么时候应该使用状态管理举例几个需要用 Vuex"}</script><link rel="canonical" href="http://www.aturan.me/posts/58483/"><link rel="alternate" href="/atom.xml" title="Kayano&#039;s Blog" type="application/atom+xml"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css"><link rel="stylesheet" href="https://fonts.lug.ustc.edu.cn/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/1.10.0/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.8.1/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css"><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.0.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Kayano&#039;s Blog</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">文章</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/tags">标签</a></div><div class="navbar-end"></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2019-07-11T15:46:59.000Z" title="7/11/2019, 3:46:59 PM">2019-07-11</time>发表</span><span class="level-item"><time dateTime="2023-11-14T13:43:37.415Z" title="11/14/2023, 1:43:37 PM">2023-11-14</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/">技术分享</a></span></div></div><h1 class="title is-3 is-size-4-mobile">为什么要使用状态管理</h1><div class="content"><p>我们平时开发的大部分项目，由于复杂度不够， 很少使用 Vuex、Redux 等状态管理库，就算引入了 Vuex 这些库，也只是当作一个全局数据引用，并非对应用状态进行管理。</p>
+<p>但一旦页面的复杂度比较高，必然要引入状态管理，今天就聊聊我理解中的状态管理。</p>
+<p>如果涉及到举例，由于我对<code>Vuex</code>更熟悉，团队内也大多比较熟悉<code>Vue</code>，因此会使用<code>Vuex</code>作例子。</p>
+<h2 id="到底什么时候应该使用状态管理"><a href="#到底什么时候应该使用状态管理" class="headerlink" title="到底什么时候应该使用状态管理"></a>到底什么时候应该使用状态管理</h2><p>举例几个需要用 Vuex 的例子:</p>
+<h3 id="例子一"><a href="#例子一" class="headerlink" title="例子一"></a>例子一</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Page.vue</span></span><br><span class="line">&lt;page&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">component-a</span> /&gt;</span></span></span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">component-b</span> /&gt;</span></span></span><br><span class="line">&lt;/page&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ComponentA.vue</span></span><br><span class="line">&lt;div&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">component-a-child</span> /&gt;</span></span></span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+
+<p>比如这个例子中，<code>&lt;component-a-child /&gt;</code>想和<code>&lt;component-b /&gt;</code>通信，使用事件传递来解决非常麻烦。</p>
+<p>当然也可以使用 EventBus，加一个全局的 vue 实例解决，但用 EventBus 还需要去关心事件的绑定解绑，需要手动处理事件，当这类组件，就会变得非常麻烦。</p>
+<p>最好的解决办法就是抽象出通用的组件状态，放到 state 里面，接着通过 action&#x2F;mutation 改变通用状态，而需要这些状态的组件则自己调用(mapState&#x2F;mapGetter)，不需要去关注组件之间的关系。</p>
+<h3 id="例子二"><a href="#例子二" class="headerlink" title="例子二"></a>例子二</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Page.vue</span></span><br><span class="line">&lt;page&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">topic-list</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">  <span class="attr">:list</span>=<span class="string">&quot;list&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">  <span class="attr">:activity</span>=<span class="string">&quot;activity&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">  <span class="attr">:user</span>=<span class="string">&quot;user&quot;</span> /&gt;</span></span></span><br><span class="line">&lt;/page&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TopicList.vue</span></span><br><span class="line">&lt;div&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">topic-header</span> <span class="attr">:list</span>=<span class="string">&quot;list&quot;</span> <span class="attr">:activity</span>=<span class="string">&quot;activity&quot;</span> <span class="attr">:user</span>=<span class="string">&quot;user&quot;</span> /&gt;</span></span></span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-for</span>=<span class="string">&quot;item in list&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">topic</span> <span class="attr">:list</span>=<span class="string">&quot;list&quot;</span> <span class="attr">:data</span>=<span class="string">&quot;item&quot;</span> <span class="attr">:activity</span>=<span class="string">&quot;activity&quot;</span> <span class="attr">:user</span>=<span class="string">&quot;user&quot;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span></span><br><span class="line">&lt;/divt</span><br></pre></td></tr></table></figure>
+
+<p>这个例子里<code>:list=&quot;list&quot; :activity=&quot;activity&quot; :user=&quot;user&quot;</code>在被不断的传递，实际里面的组件可能只需要里面的一两个属性。</p>
+<p>当然，例子里面的代码比较简单，也可以通过合理的组件设计来解决。</p>
+<p>但一旦碰到这种某几个状态数据不断被其子组件以及后代组件使用的状况，可以考虑使用状态管理来解耦，可能使代码更加简洁。</p>
+<h2 id="状态管理解决了什么"><a href="#状态管理解决了什么" class="headerlink" title="状态管理解决了什么"></a>状态管理解决了什么</h2><ul>
+<li>最主要是解耦，把组件与组件之间的复杂关系解耦为数据与数据的关系，组件仅作单纯的数据渲染，而且由于是单一数据源，整体上非常便于维护。</li>
+</ul>
+<p>以前是： <img src="https://pbwci.qun.hk/Ful1WXS4BGpw1TQr2zMTadHm8Q0i?imageView2/2/w/500"></p>
+<p>现在是： <img src="https://pbwci.qun.hk/FibadD1uNeuHRnH9OGjFPiSRs_OS?imageView2/2/w/500"></p>
+<ul>
+<li><p>由于单一数据源+数据不可变，带来了应用状态的快照，可以很方便的实现前进&#x2F;后退以及历史记录管理。</p>
+</li>
+<li><p>可测试性，可以分别针对视图和数据进行测试，而不是混淆在一起，导致测试难度极大。</p>
+</li>
+</ul>
+<h2 id="状态管理带来的新问题"><a href="#状态管理带来的新问题" class="headerlink" title="状态管理带来的新问题"></a>状态管理带来的新问题</h2><p>最主要是由于解决使得单个组件复杂度的提升，但相比整体复杂度的降低以及更高的可维护性，这点代价是完全值得。</p>
+</div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Vue-js/">Vue.js</a><a class="link-muted mr-2" rel="tag" href="/tags/%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3/">设计思想</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/posts/58660/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">前端需要注意的要点</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/posts/24394/"><span class="level-item">使用Promise实现简单的Ajax缓存</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><!--!--><div class="column column-right is-4-tablet is-4-desktop is-4-widescreen  order-3 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="https://www.gravatar.com/avatar/d715614dcb21bae438220adcc239a037?s=128" alt="Kayano"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Kayano</p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">7</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">2</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">13</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/Aturan" target="_blank" rel="noopener">关注我</a></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-11-13T18:24:23.000Z">2023-11-14</time></p><p class="title"><a href="/posts/52329/">《1984》与《动物庄园》</a></p><p class="categories"><a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2019-07-27T00:31:36.000Z">2019-07-27</time></p><p class="title"><a href="/posts/58660/">前端需要注意的要点</a></p><p class="categories"><a href="/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/">技术分享</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2019-07-11T15:46:59.000Z">2019-07-11</time></p><p class="title"><a href="/posts/58483/">为什么要使用状态管理</a></p><p class="categories"><a href="/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/">技术分享</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2018-11-13T07:09:51.000Z">2018-11-13</time></p><p class="title"><a href="/posts/24394/">使用Promise实现简单的Ajax缓存</a></p><p class="categories"><a href="/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/">技术分享</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2018-10-29T23:16:05.000Z">2018-10-30</time></p><p class="title"><a href="/posts/61397/">好的业务组件设计</a></p><p class="categories"><a href="/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/">技术分享</a></p></div></article></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Kayano&#039;s Blog</a><p class="is-size-7"><span>&copy; 2023 Kayano</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/1.10.0/js/lightgallery.min.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/katex.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/katex.min.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/contrib/auto-render.min.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><!--!--><script src="/js/main.js" defer></script><!--!--></body></html>
