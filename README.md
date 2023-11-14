@@ -1,1 +1,0 @@
-# aturan.github.io
